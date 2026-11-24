@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bake That Track</title>
+<meta name="description" content="L'appli de l'équipe Bake That Track : caisse, cuisine, appel des commandes.">
+<meta name="theme-color" content="#dc352f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BTT">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Bake That Track · l'appli de l'équipe">
+<meta property="og:description" content="Installe-la sur ton téléphone : caisse, cuisine, appel des commandes.">
+<meta property="og:image" content="icons/icon-512.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="app.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <img class="logo" src="img/logo-ligne.svg" alt="Bake That Track" width="231" height="44">
+    <div class="soir"><small>Soirée en cours</small><b id="soirTitre">Aucune soirée choisie</b></div>
+    <span class="etat lent" id="etat"><i></i><span>Connexion…</span></span>
+    <button class="btn-top" id="btnInstall" type="button" hidden>Installer</button>
+    <a class="btn-top" id="btnInvite" href="#" target="_blank" rel="noopener">Inviter</a>
+  </div>
+  <nav class="tabs" aria-label="Écrans">
+    <a href="#caisse">Caisse</a><a href="#cuisine">Cuisine</a><a href="#ecran">Écran d'appel</a><a href="#soirees">Soirées</a><a href="#concept">Le concept</a><a href="#orga">L'organisation</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <div class="banner" id="banner"></div>
+
+  <!-- CAISSE -->
+  <section class="view" id="v-caisse">
+    <div class="caisse">
+      <div>
+        <div class="stock" id="stock"></div>
+        <div class="fin-pate" id="finPate"><b>Plus de pâte.</b>Le son, lui, continue.</div>
+        <div class="menu" id="menu"></div>
+        <div class="dern">
+          <div class="h2row"><h2>Dernières commandes</h2><span class="muted" id="dernInfo"></span></div>
+          <table><thead><tr><th>N°</th><th>Contenu</th><th class="hide-s">Paiement</th><th class="r">Total</th><th>État</th><th></th></tr></thead><tbody id="dern"></tbody></table>
+        </div>
+      </div>
+      <aside class="tk" id="ticket" aria-label="Ticket en cours">
+        <div class="lab">Commande</div>
+        <div class="num" id="tkNum">1</div>
+        <ul id="tkLignes"></ul>
+        <label class="f">Prénom ou surnom (facultatif)<input class="i" id="tkNom" maxlength="30" autocomplete="off"></label>
+        <div class="f" style="margin-top:10px"><span class="muted" style="font-size:13px;font-weight:700">Paiement</span>
+          <div class="seg" id="tkPay"><button type="button" data-pay="cash">Cash</button><button type="button" data-pay="carte">Carte</button><button type="button" data-pay="offert">Offert</button></div></div>
+        <div class="tot"><span style="font-weight:700">Total</span><b class="nb" id="tkTot">0 €</b></div>
+        <button class="btn p send" id="tkSend" type="button">Envoyer en cuisine</button>
+        <button class="btn lien" id="tkVider" type="button" style="margin-top:8px">Vider le ticket</button>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="optQr"><span>Proposer au client de suivre sa commande (QR à scanner)</span></label>
+      </aside>
+    </div>
+    <div class="mbar" id="mbar"><span><b id="mbNum">N° 1</b> · <span id="mbTot">0 €</span></span><button class="btn p s" type="button" id="mbGo">Voir le ticket</button></div>
+  </section>
+
+  <!-- CUISINE -->
+  <section class="view" id="v-cuisine">
+    <div class="h2row"><h2>À enfourner</h2><span class="muted" id="cuiInfo"></span></div>
+    <div class="four-strip" id="aEnfourner"></div>
+    <div class="cols">
+      <div class="col"><h2>À faire <span id="nA">0</span></h2><div id="colA"></div></div>
+      <div class="col"><h2>Au four <span id="nF">0</span></h2><div id="colF"></div></div>
+      <div class="col"><h2>Prêtes <span id="nP">0</span></h2><div id="colP"></div></div>
+    </div>
+  </section>
+
+  <!-- ECRAN -->
+  <section class="view" id="v-ecran">
+    <div class="ecran">
+      <div class="ec-l"><h2>C'est prêt</h2><div class="prets" id="prets"></div></div>
+      <div class="ec-r">
+        <img class="logo" src="img/logo-ecran.svg" alt="Bake That Track" width="340" height="336">
+        <div><h2>Au four</h2><div class="aufour" id="aufour"></div></div>
+        <p id="ecAtt"></p>
+        <div class="ec-ctl">
+          <button class="btn p s" type="button" id="ecSon">Activer le son et la voix</button>
+          <button class="btn s" type="button" id="ecFull">Plein écran</button>
+          <a class="btn s" href="#cuisine">Quitter l'écran</a>
+        </div>
+      </div>
+      <div class="ticker" id="ticker">Ton numéro est sur ton ticket. On l'appelle au micro.</div>
+    </div>
+  </section>
+
+  <!-- SOIREES -->
+  <section class="view" id="v-soirees">
+    <div class="h2row"><h2>Les soirées</h2><button class="btn p s" type="button" id="newSoiree">Nouvelle soirée</button></div>
+    <div class="soirees">
+      <div class="sl" id="soireeList"></div>
+      <div class="card fiche" id="fiche"></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT -->
+  <section class="view lire" id="v-concept">
+    <div class="hero">
+      <div>
+        <h1>La pizza finance la culture.</h1>
+        <p>Bake That Track, c'est une bande d'amis de Liège qui fait des pizzas pendant qu'un DJ construit la soirée. La musique n'est pas un fond sonore : elle donne son nom aux pizzas, passe par le micro, rythme le service. La cuisine ouvre la porte, la musique et les artistes donnent la profondeur.</p>
+      </div>
+      <img class="sym" src="img/symbole.svg" alt="" width="380" height="348">
+    </div>
+    <div class="duo">
+      <div class="card"><h2>Ce qu'on est</h2><ul>
+        <li>Un collectif qui conçoit et anime des soirées autour de la pizza et du disque.</li>
+        <li>De la street food de qualité, à prix accessible.</li>
+        <li>Un DJ set soigné, éclectique, plutôt souterrain, qui fait partie de la soirée.</li>
+        <li>Une petite fabrique à formats : menus thématiques, collaborations avec des lieux et des cuisiniers, mixtapes, performances.</li>
+        <li>Des gens qui le font aussi pour le plaisir d'être ensemble.</li></ul></div>
+      <div class="card"><h2>Ce qu'on n'est pas</h2><ul>
+        <li>Une pizzeria à la carte ouverte tous les soirs.</li>
+        <li>Un concept gastronomique à prix qui intimident.</li>
+        <li>Un stand de bouffe posé à côté d'une soirée DJ.</li>
+        <li>Une machine à volume qui prend toutes les commandes au détriment du plaisir et de la qualité.</li></ul></div>
+    </div>
+    <div class="bloc"><h2>Une soirée, vue du public</h2><div>
+      <p>On vient pour tout à la fois : une pizza, un set, un lieu ou une collaboration qu'on découvre, et des gens aux commandes qui font partie de la fête. Le menu est court, le nombre de pizzas est fixé à l'avance, et quand il n'y a plus de pâte, on arrête. Ce n'est pas un échec à cacher : c'est le moment où la soirée passe à autre chose.</p>
+      <p>On commande à la caisse, on garde son ticket, et on écoute : le numéro passe au micro, dans la musique, avec une phrase qui change.</p></div></div>
+    <div class="bloc"><h2>La musique</h2><div>
+      <p>Musiques électroniques, rare groove, italo disco, new wave et post-punk, hip-hop, classiques rock ou électroniques des années 80 à aujourd'hui : la sélection change avec la soirée, et ne s'enferme dans aucun genre. Un set construit, avec des ruptures, de la lenteur qui danse, des transitions, parfois des instruments et du sampling.</p>
+      <p>Le micro est un instrument de plus : annoncer une pizza, appeler une commande, ponctuer un geste, sans couper la musique.</p></div></div>
+    <div class="bloc"><h2>L'argent</h2><div>
+      <p>Les soirées doivent valoir le temps et l'énergie qu'on y met, sans perdre l'accessibilité. Trois formules ont été discutées : un cachet pour l'animation plus la vente des pizzas ; un cachet « tout compris » ; et, selon le lieu et après accord, une part de la gestion du bar.</p>
+      <p>Côté public, l'idée est un prix unique abordable, avec un complément libre pour financer la culture, plutôt que des tarifs qui étiquettent les gens. Les modalités restent à confirmer avant toute annonce.</p></div></div>
+    <div class="bloc"><h2>Ce qu'on explore</h2><div>
+      <p>Des pistes, pas des engagements : un format de fin de soirée, Digesto Club, quand les pizzas sont finies ; une académie pour transmettre la méthode à des personnes de confiance si la demande dépasse l'équipe ; une mixtape à prix libre pour alimenter un fonds destiné aux artistes et aux prochaines soirées.</p></div></div>
+  </section>
+
+  <!-- ORGANISATION -->
+  <section class="view lire" id="v-orga">
+    <h1 style="font-size:clamp(40px,6vw,72px);color:var(--tomate)">Comment on s'organise</h1>
+    <div class="chiffres">
+      <div><b>4</b><span>personnes au stand</span></div>
+      <div><b>≈ 50</b><span>pizzas en 2 heures</span></div>
+      <div><b>24 cm</b><span>coupées en 4 parts</span></div>
+      <div><b>3</b><span>pizzas au menu, pas plus</span></div>
+    </div>
+    <p class="piste-note">Repères tirés des soirées passées, pas des garanties : chaque lieu change la donne (fours, puissance, froid, espace).</p>
+
+    <div class="bloc" style="grid-template-columns:minmax(0,1fr)"><h2>Le trajet d'une commande</h2>
+      <div class="trajet">
+        <div class="st"><div class="rond">1</div><div><h3>Caisse</h3><p>On prend la commande, on encaisse, on donne le ticket avec son numéro.</p><small>Écran Caisse</small></div></div>
+        <div class="st"><div class="rond">2</div><div><h3>À faire</h3><p>La commande arrive en cuisine. On regroupe : combien de parts de chaque pizza attendent.</p><small>Écran Cuisine</small></div></div>
+        <div class="st"><div class="rond">3</div><div><h3>Au four</h3><p>La pizza est enfournée. On voit depuis combien de temps chaque commande attend.</p><small>Écran Cuisine</small></div></div>
+        <div class="st"><div class="rond">4</div><div><h3>Prête</h3><p>Carillon chez toute l'équipe, numéro géant à l'écran, voix dans la sono.</p><small>Écran d'appel</small></div></div>
+        <div class="st"><div class="rond">5</div><div><h3>Servie</h3><p>Le ticket repart avec sa pizza. La commande sort de l'écran.</p><small>Écran Cuisine</small></div></div>
+      </div>
+    </div>
+
+    <div class="bloc" style="grid-template-columns:minmax(0,1fr)"><h2>Les postes</h2>
+      <p>Les rôles tournent entre pizza, mixage et instruments ; ce qui compte, c'est que chaque poste soit tenu à chaque instant.</p>
+      <div class="postes">
+        <div class="card"><h3>Pâte</h3><p>Sort les pâtons du froid au bon rythme, étale, tient le compte de ce qui reste.</p><small>Regarde : Cuisine, compteur de pâtons</small></div>
+        <div class="card"><h3>Four</h3><p>Garnit et enfourne, surveille la pierre, sort les pizzas et passe la commande en « prête ».</p><small>Utilise : Cuisine</small></div>
+        <div class="card"><h3>Finitions</h3><p>Coupe en quatre, met la finition de croûte (huile, pesto, herbes), remet la pizza contre le ticket.</p><small>Utilise : Cuisine, « Servie »</small></div>
+        <div class="card"><h3>Caisse et micro</h3><p>Prend les commandes, encaisse, donne les tickets. Relance un appel si quelqu'un n'est pas venu.</p><small>Utilise : Caisse</small></div>
+        <div class="card"><h3>DJ</h3><p>Tient le set. L'écran d'appel est branché sur la table : la voix des commandes passe dans la musique.</p><small>Branche : Écran d'appel</small></div>
+      </div>
+    </div>
+
+    <div class="bloc" style="grid-template-columns:minmax(0,1fr)"><h2>Le parcours d'une date</h2>
+      <div class="parcours">
+        <div class="card" style="padding:16px 18px"><h3>Avant</h3><ol>
+          <li>Accord avec le lieu, et ses contraintes : fours, électricité ou gaz, froid, espace.</li>
+          <li>Format, public, horaires, prix, objectif financier.</li>
+          <li>Menu court et quantités, à partir du nombre réel de pizzas.</li>
+          <li>Pâte : pétrissage, fermentation, stockage au froid.</li>
+          <li>Matériel de cuisson et de son, chargement du van.</li></ol></div>
+        <div class="card" style="padding:16px 18px"><h3>Le jour J</h3><ol start="6">
+          <li>Répartition des postes, et qui tourne quand.</li>
+          <li>Circulation : file, caisse, sortie des pizzas.</li>
+          <li>Annonces, set, interactions avec le public.</li></ol>
+          <p class="piste-note">Dans l'appli : choisir la soirée en cours, ouvrir la Caisse, la Cuisine et l'Écran d'appel sur trois appareils.</p></div>
+        <div class="card" style="padding:16px 18px"><h3>Après</h3><ol start="9">
+          <li>Nettoyage, transport, et bilan : l'onglet Soirées calcule les pizzas vendues et la recette à partir des commandes.</li></ol>
+          <p class="piste-note">Le van : VW Transporter T6.1 court. Tout ce qui part (four, déco, deck) doit y tenir et se monter vite.</p></div>
+      </div>
+      <p class="piste-note">La checklist détaillée de chaque date se coche dans l'onglet Soirées.</p>
+    </div>
+
+    <div class="bloc"><h2>Le service, réglé une fois</h2><div>
+      <p><b>Menu court.</b> Trois pizzas au plus, une base commune déclinée, des finitions rapides et reproductibles.</p>
+      <p><b>Quantité fixée.</b> Le nombre de pâtons est décidé avant la soirée ; l'appli le décompte à chaque vente et prévient quand il en reste peu.</p>
+      <p><b>Fin de la pâte, fin des pizzas.</b> La caisse se ferme d'elle-même, l'écran l'annonce, la soirée continue autrement.</p>
+      <p><b>Plus de demande ne veut pas dire plus de volume.</b> Toute hausse se juge à la pâte, au four, au service, et au plaisir de l'équipe.</p></div></div>
+    <div class="bloc"><h2>L'appli sur vos téléphones</h2><div>
+      <p>Envoie le lien sur le groupe WhatsApp de l'équipe : chacun l'ouvre, l'installe, puis entre le code d'équipe une seule fois. Les commandes passent ensuite en direct d'un téléphone à l'autre.</p>
+      <div class="appli"><a class="btn p s" id="waInvite2" href="#" target="_blank" rel="noopener">Inviter sur WhatsApp</a><button class="btn s" type="button" id="btnInstall2">Installer sur ce téléphone</button><button class="btn s" type="button" id="btnNotif">Notifications sur cet appareil</button></div>
+      <p class="note" id="notifNote">Les notifications arrivent tant que l'appli est ouverte ou vient d'être mise en arrière-plan. Les clients, eux, suivent leur commande par le QR montré à la caisse, sans rien installer.</p></div></div>
+    <div class="bloc"><h2>Les phrases d'appel</h2><div>
+      <p>Quand une commande passe en « prête », l'écran d'appel dit l'une de ces phrases, à tour de rôle. <b>{n}</b> est remplacé par le numéro ; si le client a donné un prénom, il est dit en premier. Une phrase par ligne, courte : la répétition fait le rituel.</p>
+      <label class="f">Phrases (partagées avec toute l'équipe)<textarea class="i" id="phrases" rows="6"></textarea></label>
+      <p style="margin-top:12px"><button class="btn s" type="button" id="testVoix">Écouter un appel</button></p></div></div>
+  </section>
+</main>
+
+
+<div class="sheet" id="install" role="dialog" aria-modal="true" aria-labelledby="instT"><div class="in">
+  <img class="sym" src="img/symbole.svg" alt="" width="132" height="121">
+  <h1 id="instT">Installe l'appli BTT</h1>
+  <div id="instBody"></div>
+  <button class="btn lien" type="button" id="instLater">Continuer dans le navigateur</button>
+</div></div>
+
+<div class="sheet" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateT"><div class="in">
+  <img class="sym" src="img/symbole.svg" alt="" width="132" height="121">
+  <h1 id="gateT">Code d'équipe</h1>
+  <p>Il est dans le message d'invitation. Tu ne le taperas qu'une fois sur ce téléphone.</p>
+  <input class="i code" id="gCode" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code d'équipe">
+  <button class="btn p big" type="button" id="gGo">Entrer</button>
+  <div class="gate-err" id="gErr" aria-live="polite"></div>
+  <details><summary style="cursor:pointer;font-weight:700">Première fois pour toute l'équipe ? Créer le code</summary>
+    <p class="note" style="margin-top:8px">À faire une seule fois, par la personne qui lance l'appli. Choisis au moins 6 caractères, faciles à dicter, et garde-les pour l'équipe.</p>
+    <input class="i code" id="gNew" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Nouveau code d'équipe" style="margin-top:8px">
+    <button class="btn big" type="button" id="gCreate" style="margin-top:10px">Créer l'équipe avec ce code</button>
+  </details>
+</div></div>
+
+<div class="dlg" id="qrDlg" role="dialog" aria-modal="true" aria-labelledby="qrT"><div class="card" style="text-align:center">
+  <h3 id="qrT">Commande <span id="qrNum"></span></h3>
+  <p style="margin:0">Scanne avec l'appareil photo pour être prévenu quand c'est prêt.</p>
+  <div class="qr" id="qrBox"></div>
+  <p class="note" id="qrUrl" style="overflow-wrap:anywhere"></p>
+  <div class="row" style="justify-content:center"><button class="btn p" type="button" id="qrOk">Fermer</button></div>
+</div></div>
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="card"><h3 id="dlgT"></h3><p id="dlgP"></p><div class="row"><button class="btn" type="button" id="dlgNo">Garder</button><button class="btn p" type="button" id="dlgYes">Supprimer</button></div></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

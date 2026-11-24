@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// Règles d'accès de l'appli Bake That Track.
+// - Seuls les membres de l'équipe (qui ont saisi le bon code) lisent et écrivent les soirées et commandes.
+// - Le code d'équipe est choisi à la première ouverture et n'est lisible par personne.
+// - Les pages de suivi client ne montrent qu'un numéro et un état, à qui possède le lien.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function membre(eq) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/equipes/$(eq)/membres/$(request.auth.uid));
+    }
+
+    // Code d'équipe : créé une seule fois, jamais relu ni modifié depuis l'appli.
+    match /equipes/{eq}/prive/acces {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['code'])
+        && request.resource.data.code is string
+        && request.resource.data.code.size() >= 6;
+      allow read, update, delete: if false;
+    }
+
+    // Rejoindre l'équipe : il faut donner le bon code.
+    match /equipes/{eq}/membres/{uid} {
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['code', 'depuis'])
+        && request.resource.data.code == getAfter(/databases/$(database)/documents/equipes/$(eq)/prive/acces).data.code;
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, update, delete: if false;
+    }
+
+    // Données de travail de l'équipe.
+    match /equipes/{eq}/{coll}/{id} {
+      allow read, write: if coll in ['soirees', 'commandes', 'config'] && membre(eq);
+    }
+
+    // Suivi client : lecture d'une commande précise par son lien, écriture par l'équipe.
+    match /suivi/{token} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if membre('btt');
+    }
+  }
+}

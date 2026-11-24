@@ -1,0 +1,23 @@
+{
+  "name": "Bake That Track",
+  "short_name": "BTT",
+  "description": "Caisse, cuisine et appel des commandes de Bake That Track.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fdedcf",
+  "theme_color": "#dc352f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Caisse", "url": "./#caisse", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Cuisine", "url": "./#cuisine", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Écran d'appel", "url": "./#ecran", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

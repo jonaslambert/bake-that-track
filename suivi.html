@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ta commande · Bake That Track</title>
+<meta name="theme-color" content="#dc352f">
+<link rel="icon" href="icons/favicon-64.png" type="image/png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+/* VOICE  le ticket du client, dans sa poche : rassurant, drôle, lisible d'un coup d'œil
+   IDEA   le ticket BTT qui devient rouge quand la pizza sort du four
+   PICTURE le numéro géant et les trois étapes ; tout l'écran passe au rouge à l'appel
+   COLOUR crème, tomate, noir vinyle ; croûte pour « au four », basilic pour « prête »
+   TYPE   Anton + Archivo
+   LAYOUT une colonne, le numéro en haut, le bouton d'alerte en bas, rien d'autre */
+:root{color-scheme:light;--creme:#fdedcf;--creme2:#fff7e8;--encre:#1f1714;--douce:#6b4a3e;--tomate:#dc352f;--croute:#e9a23b;--basilic:#2f6b3c;--t:Anton,"Arial Narrow",Impact,sans-serif;--x:Archivo,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%}
+body{background:var(--creme);color:var(--encre);font:17px/1.5 var(--x);display:flex;flex-direction:column;align-items:center;padding:calc(20px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));transition:background .4s}
+main{width:100%;max-width:440px;display:flex;flex-direction:column;gap:18px;flex:1}
+.logo{width:180px;height:auto;align-self:center}
+.lab{font-weight:800;font-size:15px;color:var(--douce);text-align:center;margin:0}
+.num{font-family:var(--t);font-size:clamp(120px,40vw,190px);line-height:.9;text-align:center;color:var(--tomate);margin:0}
+.etat{font-family:var(--t);font-size:clamp(30px,9vw,44px);line-height:1.05;text-align:center;margin:0}
+.sous{text-align:center;margin:0;color:var(--douce)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}
+.steps li{text-align:center;font-weight:800;font-size:14px;padding:10px 4px;border:2px dashed var(--douce);border-radius:999px;color:var(--douce)}
+.steps li.on{border-style:solid;border-color:var(--encre);color:var(--encre);background:var(--creme2)}
+.steps li.four.on{background:var(--croute);border-color:var(--croute)}
+.steps li.prete.on{background:var(--basilic);border-color:var(--basilic);color:#fdedcf}
+.contenu{text-align:center;font-weight:600;margin:0}
+button{font:800 19px/1 var(--x);min-height:58px;border-radius:8px;border:3px solid var(--encre);background:var(--tomate);color:#fdedcf;box-shadow:4px 4px 0 var(--encre);cursor:pointer;width:100%;margin-top:auto}
+button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--encre)}
+button:focus-visible{outline:3px solid var(--croute);outline-offset:3px}
+button[aria-pressed=true]{background:var(--creme2);color:var(--encre)}
+.note{font-size:14px;color:var(--douce);text-align:center;margin:0}
+body.pret{background:var(--tomate);color:#fdedcf}
+body.pret .num{color:#fdedcf;animation:pulse 1s ease-in-out infinite}
+body.pret .lab,body.pret .sous,body.pret .note{color:#fdedcf}
+body.pret .steps li{border-color:#fdedcf;color:#fdedcf}
+body.pret button{background:#fdedcf;color:var(--encre)}
+@keyframes pulse{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" id="logo" src="img/logo-principal.svg" alt="Bake That Track" width="180" height="178">
+  <p class="lab">Ta commande</p>
+  <p class="num" id="num">…</p>
+  <p class="etat" id="etat">On cherche ton ticket.</p>
+  <p class="sous" id="sous"></p>
+  <ol class="steps" aria-label="Étapes"><li class="attente">Reçue</li><li class="four">Au four</li><li class="prete">Prête</li></ol>
+  <p class="contenu" id="contenu"></p>
+  <button type="button" id="alerte" aria-pressed="false">Me prévenir quand c'est prêt</button>
+  <p class="note" id="note">Garde cette page ouverte : ton téléphone sonne et vibre quand ta pizza sort du four.</p>
+</main>
+<script type="module" src="suivi.js"></script>
+</body>
+</html>
